@@ -97,7 +97,7 @@ class Fluent extends \Dibi\Fluent
 
 		if ($propertyList || $additionalTableList) {
 			// in case I wish to restrict the result
-			$tables = array_unique(array_merge($innerJoinTables, $propertyTables, $additionalTables));
+			$tables = array_unique(array_merge($innerJoinTables, $propertyTables, $additionalTables), SORT_REGULAR);
 		}
 
 
