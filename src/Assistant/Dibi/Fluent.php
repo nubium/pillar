@@ -97,15 +97,23 @@ class Fluent extends \Dibi\Fluent
 
 		if ($propertyList || $additionalTableList) {
 			// in case I wish to restrict the result
-			$tables = array_unique(array_merge($innerJoinTables, $propertyTables, $additionalTables));
+			$tables = array_unique(array_merge($innerJoinTables, $propertyTables, $additionalTables), SORT_REGULAR);
 		}
 
-
-		$this->from(sprintf(
-			'`%s` AS `%s`',
-			$primaryTable->getName(),
-			$primaryTable->getIdentifier()
-		));
+		if ($primaryTable->getSqlJoinCode()) {
+			$fromCodeParts = preg_split('/\\s+/', $primaryTable->getSqlJoinCode(), 2);
+			if (count($fromCodeParts) == 2) {
+				$this->__call($fromCodeParts[0], [$fromCodeParts[1]]);
+			} else {
+				$this->__call('FROM', [$primaryTable->getSqlJoinCode()]);
+			}
+		} else {
+			$this->from(sprintf(
+				'`%s` AS `%s`',
+				$primaryTable->getName(),
+				$primaryTable->getIdentifier()
+			));
+		}
 
 		foreach ($tables as $table) {
 			$this->__call('', [$table->getSqlJoinCode()]);
