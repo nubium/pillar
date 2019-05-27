@@ -1,26 +1,22 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Assistant\Dibi\Sorting;
 
-class Sorting implements ISorting
+class ExpressiveSorting implements ISorting
 {
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $property;
 
-	/**
-	 * @var SortingDirectionEnum
-	 */
+	/** @var SortingDirectionEnum */
 	private $direction;
 
-	/**
-	 * @param string $property
-	 * @param SortingDirectionEnum $direction
-	 */
-	public function __construct($property, SortingDirectionEnum $direction)
+	/** @var string */
+	private $dibiExpression;
+
+	public function __construct(string $dibiExpression, string $property, SortingDirectionEnum $direction)
 	{
 		$this->property = $property;
 		$this->direction = $direction;
+		$this->dibiExpression = $dibiExpression;
 	}
 
 	public function getProperty(): string
@@ -35,6 +31,6 @@ class Sorting implements ISorting
 
 	public function getDibiRepresentation(): string
 	{
-		return '%n';
+		return $this->dibiExpression;
 	}
 }

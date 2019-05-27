@@ -3,13 +3,9 @@ namespace SpareParts\Pillar\Assistant\Dibi\Sorting;
 
 interface ISorting
 {
-	/**
-	 * @return string
-	 */
-	public function getProperty();
+	public function getProperty(): string;
 
-	/**
-	 * @return SortingDirectionEnum
-	 */
-	public function getDirection();
+	public function getDirection(): SortingDirectionEnum;
+
+	public function getDibiRepresentation(): string;
 }
