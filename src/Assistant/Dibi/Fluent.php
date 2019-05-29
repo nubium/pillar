@@ -183,7 +183,7 @@ class Fluent extends \Dibi\Fluent
 			}
 			$columnInfo = $sortableProperties[$sorting->getProperty()];
 			$this->orderBy(
-				'%n', sprintf(
+				$sorting->getDibiRepresentation(), sprintf(
 					'%s.%s',
 					$columnInfo->getTableInfo()->getIdentifier(),
 					$columnInfo->getColumnName()
