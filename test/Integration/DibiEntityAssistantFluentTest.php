@@ -13,9 +13,8 @@ use SpareParts\Pillar\Entity\EntityFactory;
 use SpareParts\Pillar\Mapper\Dibi\AnnotationMapper;
 use SpareParts\Pillar\Test\Fixtures\GridProduct;
 
-class DibiEntityAssistantFluentTest extends MockeryTestCase
+class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 {
-	use MockeryPHPUnitIntegration;
 	use TestCaseTrait {
 		setUp as dbunit_setUp;
 	}
