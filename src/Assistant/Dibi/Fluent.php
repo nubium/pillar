@@ -8,6 +8,9 @@ use SpareParts\Pillar\Mapper\Dibi\ColumnInfo;
 use SpareParts\Pillar\Mapper\Dibi\IEntityMapping;
 use SpareParts\Pillar\Mapper\Dibi\TableInfo;
 
+/**
+ * @method Fluent select(...$field)
+ */
 class Fluent extends \Dibi\Fluent
 {
 	/**
