@@ -1,9 +1,4 @@
-CREATE DATABASE IF NOT EXISTS `testdb` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `testdb`;
-
--- CREATE USER 'travis'@'localhost' IDENTIFIED BY 'travis';
--- GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON *.* TO 'travis'@'localhost';
--- GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON *.* TO 'travis'@'127.0.0.1';
+USE `test`;
 
 CREATE TABLE products
 (

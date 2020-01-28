@@ -36,9 +36,10 @@ class DibiEntityAssistantFluentTest extends MockeryTestCase
 		$entityFactory = new EntityFactory();
 		$this->connection = new \Dibi\Connection([
 			'host' => '127.0.0.1',
-			'username' => 'travis',
-			'password' => '',
-			'database' => 'testdb',
+			'port' => getenv('MARIADB_PORT'),
+			'username' => 'user',
+			'password' => 'password',
+			'database' => 'test',
 			'charset' => 'utf8',
 			'driver' => 'mysqli',
 		]);
@@ -182,7 +183,7 @@ class DibiEntityAssistantFluentTest extends MockeryTestCase
 
 	protected function getConnection()
 	{
-		$pdo = new \PDO('mysql:host=127.0.0.1;dbname=testdb', 'travis', '', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
+		$pdo = new \PDO('mysql:host=127.0.0.1;port='.getenv('MARIADB_PORT').';dbname=test', 'user', 'password', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
 		return $this->createDefaultDBConnection($pdo);
 	}
 

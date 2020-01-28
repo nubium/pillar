@@ -1,0 +1,51 @@
+name: PHP Composer
+
+on: [push]
+
+jobs:
+  build:
+    services:
+      mariadb:
+        image: mariadb:latest
+        ports:
+          - 3306
+        env:
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+          MYSQL_DATABASE: test
+          MYSQL_ROOT_PASSWORD: password
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
+    # Docs: https://getcomposer.org/doc/articles/scripts.md
+
+    - name: Verify MariaDB connection
+      env:
+        PORT: ${{ job.services.mariadb.ports[3306] }}
+      run: |
+        while ! mysqladmin ping -h"mariadb" -P"3306" --silent; do
+          sleep 1
+        done
+
+    - name: Port
+      env:
+        MARIADB_PORT: ${{ job.services.mariadb.ports[3306] }}
+      run: |
+        echo "${MARIADB_PORT}"
+
+    - name: Run test suite
+      env:
+        MARIADB_PORT: ${{ job.services.mariadb.ports[3306] }}
+      run: |
+        vendor/bin/phpunit

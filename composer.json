@@ -10,6 +10,7 @@
     "doctrine/annotations": "~1"
   },
   "require-dev": {
+    "ext-pdo": "*",
     "phpunit/phpunit": "~6",
     "phpunit/dbunit": "~3",
     "mockery/mockery": "~1"
