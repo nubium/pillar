@@ -4,6 +4,7 @@ namespace SpareParts\Pillar\Mapper\Dibi;
 use Doctrine\Common\Annotations\Reader;
 use SpareParts\Pillar\Entity\IEntity;
 use SpareParts\Pillar\Mapper\Annotation\Column;
+use SpareParts\Pillar\Mapper\Annotation\Inherit;
 use SpareParts\Pillar\Mapper\Annotation\IPillarAnnotation;
 use SpareParts\Pillar\Mapper\Annotation\Table;
 use SpareParts\Pillar\Mapper\Annotation\VirtualEntity;
@@ -52,7 +53,7 @@ class AnnotationMapper implements IMapper
 			$tableInfoList = [];
 			$isVirtualEntity = false;
 
-			foreach ($this->annotationReader->getClassAnnotations($class) as $classAnnotation) {
+			foreach ($this->getClassAnnotations($class) as $classAnnotation) {
 				if (!($classAnnotation instanceof IPillarAnnotation)) {
 					continue;
 				}
@@ -119,5 +120,23 @@ class AnnotationMapper implements IMapper
 			);
 		}
 		return $this->dibiMappingCache[$className];
+	}
+
+
+	/**
+	 * @return array
+	 */
+	private function getClassAnnotations(\ReflectionClass $class)
+	{
+		$annotations = $this->annotationReader->getClassAnnotations($class);
+		$filteredAnnotations = array_filter($annotations, function ($annotation) {
+			return !$annotation instanceof Inherit;
+		});
+
+		$parentAnnotations = count($filteredAnnotations) === count($annotations) || !($parentClass = $class->getParentClass())
+			? []
+			: $this->getClassAnnotations($parentClass);
+
+		return array_merge($parentAnnotations, $filteredAnnotations);
 	}
 }

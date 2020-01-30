@@ -413,17 +413,8 @@ class DibiEntityAssistant
 		// we need array key of ColumnInfo[] to be the column name for easy handling
 		$columnInfos = $this->getColumnInfosForTable($entityMapping, $tableInfo);
 
-		// entity will tell us which properties did change
-		$changedProperties = $entity->getChangedProperties($this->getEntityProperties($entityMapping->getEntityClassName()));
-		// ... then we can find DB mapping for those properties
-		$changedColumnInfos = array_filter(
-			$columnInfos,
-			function (ColumnInfo $columnInfo) use ($changedProperties) {
-				return in_array($columnInfo->getPropertyName(), $changedProperties);
-			}
-		);
 		// now we know database columns and can prepare data for inserting into DB
-		$columnValuesToStore = $this->getEntityPropertyValuesMappedToColumns($entity, $changedColumnInfos);
+		$columnValuesToStore = $this->getEntityPropertyValuesMappedToColumns($entity, $columnInfos);
 
 		// nothing to store in this table?
 		if (!count($columnValuesToStore)) {
