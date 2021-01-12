@@ -1,15 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Mapper\Dibi;
-
-use SpareParts\Pillar\Mapper\Dibi\ColumnInfo;
-use SpareParts\Pillar\Mapper\Dibi\TableInfo;
 
 interface IEntityMapping
 {
 	/**
 	 * @return string
 	 */
-	public function getEntityClassName();
+	public function getEntityClassName(): string;
 
 	/**
 	 * @return TableInfo[]
@@ -20,10 +17,7 @@ interface IEntityMapping
 	 * @param string $tableIdentifier
 	 * @return ColumnInfo[]
 	 */
-	public function getColumnsForTable($tableIdentifier);
+	public function getColumnsForTable($tableIdentifier): array;
 
-	/**
-	 * @return bool
-	 */
-	public function isVirtualEntity();
+	public function isVirtualEntity(): bool;
 }

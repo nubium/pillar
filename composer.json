@@ -4,7 +4,7 @@
   "keywords":    ["orm", "model", "entity", "mysql", "database", "persistence"],
   "license":     "MIT",
   "require": {
-    "php":  ">=5.6.0",
+    "php": ">=7.4",
     "dibi/dibi": ">=3",
     "spareparts/enum": "~1",
     "doctrine/annotations": "~1"

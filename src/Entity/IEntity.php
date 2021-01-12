@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Entity;
 
 interface IEntity
@@ -8,5 +8,5 @@ interface IEntity
 	 *
 	 * @return string[]
 	 */
-	public function getChangedProperties($properties);
+	public function getChangedProperties(array $properties): array;
 }

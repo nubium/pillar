@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Entity;
 
 /**
@@ -11,7 +11,7 @@ class Entity implements IEntity
 	/**
 	 * @var mixed[]
 	 */
-	private $_originalValues;
+	private array $_originalValues;
 
 	/**
 	 * @param array $data
@@ -27,7 +27,7 @@ class Entity implements IEntity
 	 * @param string[] $properties List of concerned properties
 	 * @return mixed[]
 	 */
-	public function getChangedProperties($properties)
+	public function getChangedProperties(array $properties): array
 	{
 		$changed = [];
 		foreach ($properties as $property) {

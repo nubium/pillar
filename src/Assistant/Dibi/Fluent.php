@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Assistant\Dibi;
 
 use SpareParts\Enum\Converter\MapConverter;
@@ -128,7 +128,7 @@ class Fluent extends \Dibi\Fluent
 	 * @param string[] $propertyList
 	 * @return TableInfo[]
 	 */
-	private function preparePropertyTables(array $propertyList)
+	private function preparePropertyTables(array $propertyList): array
 	{
 		// tables that should not be important to select correct row (ie. left joins)
 		/** @var TableInfo[] $optionalTables */
@@ -158,7 +158,7 @@ class Fluent extends \Dibi\Fluent
 	 * @throws UnknownPropertyException
 	 * @throws \SpareParts\Enum\Converter\UnableToConvertException
 	 */
-	public function applySorting(array $sortingList)
+	public function applySorting(array $sortingList): self
 	{
 		if (count($sortingList) === 0) {
 			// don't try to apply empty $sortingList

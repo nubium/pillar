@@ -1,11 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Assistant\Dibi;
 
 
 interface IConnectionProvider
 {
-	/**
-	 * @return \Dibi\Connection
-	 */
-	public function getConnection();
+	public function getConnection(): \Dibi\Connection;
 }

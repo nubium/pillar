@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Mapper\Dibi;
 
 use Doctrine\Common\Annotations\Reader;
@@ -13,21 +13,13 @@ use SpareParts\Pillar\Mapper\IMapper;
 
 class AnnotationMapper implements IMapper
 {
-	/**
-	 * @var Reader
-	 */
-	private $annotationReader;
+	private Reader $annotationReader;
 
 	/**
 	 * @var IEntityMapping[]
 	 */
-	private $dibiMappingCache = [];
+	private array $dibiMappingCache = [];
 
-	/**
-	 * Mapper constructor.
-	 *
-	 * @param Reader $annotationReader
-	 */
 	public function __construct(Reader $annotationReader)
 	{
 		$this->annotationReader = $annotationReader;
@@ -38,7 +30,7 @@ class AnnotationMapper implements IMapper
 	 * @return IEntityMapping
 	 * @throws EntityMappingException
 	 */
-	public function getEntityMapping($classnameOrInstance)
+	public function getEntityMapping($classnameOrInstance): IEntityMapping
 	{
 		$className = $classnameOrInstance;
 		if (is_object($classnameOrInstance)) {
@@ -124,9 +116,9 @@ class AnnotationMapper implements IMapper
 
 
 	/**
-	 * @return array
+	 * @return object[]
 	 */
-	private function getClassAnnotations(\ReflectionClass $class)
+	private function getClassAnnotations(\ReflectionClass $class): array
 	{
 		$annotations = $this->annotationReader->getClassAnnotations($class);
 		$filteredAnnotations = array_filter($annotations, function ($annotation) {

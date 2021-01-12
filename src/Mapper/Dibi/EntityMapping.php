@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Mapper\Dibi;
 
 class EntityMapping implements IEntityMapping
@@ -8,20 +8,12 @@ class EntityMapping implements IEntityMapping
 	 */
 	private $tableInfoList = [];
 
-	/**
-	 * @var ColumnInfo[]
-	 */
-	private $columnInfoList = [];
+	/** @var ColumnInfo[] */
+	private array $columnInfoList = [];
 
-	/**
-	 * @var string
-	 */
-	private $entityClassName;
+	private string $entityClassName;
 
-	/**
-	 * @var bool
-	 */
-	private $isVirtualEntity;
+	private bool $isVirtualEntity;
 
 	/**
 	 * @param string $entityClassName
@@ -40,7 +32,7 @@ class EntityMapping implements IEntityMapping
 	/**
 	 * @return string
 	 */
-	public function getEntityClassName()
+	public function getEntityClassName(): string
 	{
 		return $this->entityClassName;
 	}
@@ -57,7 +49,7 @@ class EntityMapping implements IEntityMapping
 	 * @param string $tableIdentifier
 	 * @return ColumnInfo[]
 	 */
-	public function getColumnsForTable($tableIdentifier)
+	public function getColumnsForTable($tableIdentifier): array
 	{
 		return array_filter($this->columnInfoList, function (ColumnInfo $columnInfo) use ($tableIdentifier) {
 			return ($columnInfo->getTableInfo()->getIdentifier() === $tableIdentifier);
@@ -67,7 +59,7 @@ class EntityMapping implements IEntityMapping
 	/**
 	 * @return bool
 	 */
-	public  function isVirtualEntity() {
+	public  function isVirtualEntity(): bool {
 		return $this->isVirtualEntity;
 	}
 }

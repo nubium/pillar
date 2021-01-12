@@ -1,23 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Assistant\Dibi\Sorting;
 
 class Sorting implements ISorting
 {
-	/**
-	 * @var string
-	 */
-	private $property;
+	private string $property;
 
-	/**
-	 * @var SortingDirectionEnum
-	 */
-	private $direction;
+	private SortingDirectionEnum $direction;
 
-	/**
-	 * @param string $property
-	 * @param SortingDirectionEnum $direction
-	 */
-	public function __construct($property, SortingDirectionEnum $direction)
+	public function __construct(string $property, SortingDirectionEnum $direction)
 	{
 		$this->property = $property;
 		$this->direction = $direction;

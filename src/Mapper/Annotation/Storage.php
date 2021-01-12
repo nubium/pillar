@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Mapper\Annotation;
 
 use Doctrine\Common\Annotations\Annotation\Required;
@@ -9,10 +9,9 @@ use Doctrine\Common\Annotations\Annotation\Required;
 class Storage implements IPillarAnnotation
 {
 	/**
-	 * @var string
 	 * @Required()
 	 */
-	protected $type;
+	protected string $type;
 
 	public function __construct($values)
 	{
@@ -24,10 +23,7 @@ class Storage implements IPillarAnnotation
 		}
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getType()
+	public function getType(): string
 	{
 		return $this->type;
 	}
