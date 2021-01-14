@@ -60,8 +60,11 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 			->fluent(GridProduct::class)
 			->selectEntityProperties()
 			->fromEntityDataSources()
-			->where('`products`.`id` = %i', 25)
+			->where('`p`.`id` = %i', 25)
 			->fetch();
+        ;
+
+//		$product->fetch();
 
 		$this->assertEquals(25, $product->getId());
 		$this->assertEquals(1, $product->getImageId());
@@ -85,7 +88,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('amazing bedsheet', $data[0]['name']);
 
 		// this is questionable way to ensure `images` table is not present in the sql query.
-		$this->assertEquals('SELECT `name` FROM `products` AS `products`', $fluent->__toString());
+		$this->assertEquals('SELECT `name` FROM `products` AS `p`', $fluent->__toString());
 	}
 
 	/**
@@ -103,7 +106,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('/path/to/image', $data[0]['path']);
 
 		// this is questionable way to ensure `images` table is really joined
-		$this->assertEquals('SELECT `path` FROM `products` AS `products`  LEFT JOIN `images` `img` ON `img`.`id` = `products`.`image_id`', $fluent->__toString());
+		$this->assertEquals('SELECT `path` FROM `products` AS `p`  LEFT JOIN `images` `img` ON `img`.`id` = `p`.`image_id`', $fluent->__toString());
 	}
 
 	/**
@@ -120,8 +123,53 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertEquals('/path/to/image', $data[0]['path']);
 		// this is questionable way to ensure `images` table is really joined
-		$this->assertEquals('SELECT `path` FROM `products` AS `products`  LEFT JOIN `images` `img` ON `img`.`id` = `products`.`image_id`', $fluent->__toString());
+		$this->assertEquals('SELECT `path` FROM `products` AS `p`  LEFT JOIN `images` `img` ON `img`.`id` = `p`.`image_id`', $fluent->__toString());
 	}
+
+    /**
+     * @test
+     */
+    public function fluentCanUseTagToChangePrimarySelectTable()
+    {
+        $fluent = $this->entityAssistant
+            ->fluent(GridProduct::class)
+            ->selectEntityProperties()
+            ->fromEntityDataSources(null, null, 'idx')
+            ->where('`p`.`id` = %i', 25);
+
+        /** @var GridProduct $product */
+        $product = $fluent->fetch();
+        $this->assertEquals(25, $product->getId());
+        $this->assertEquals(1, $product->getImageId());
+        $this->assertEquals('amazing bedsheet', $product->getName());
+        $this->assertEquals(12.5, $product->getPrice());
+        $this->assertEquals('/path/to/image', $product->getImage());
+
+        $this->assertEquals('SELECT `p`.`id` AS `id` , `p`.`name` AS `name` , `p`.`image_id` AS `imageId` , `p`.`price` AS `price` , `img`.`path` AS `image` FROM `products` `p` USE INDEX (`idx_try_me_out`)  LEFT JOIN `images` `img` ON `img`.`id` = `p`.`image_id` WHERE `p`.`id` = 25', $fluent->__toString());
+    }
+
+
+    /**
+     * @test
+     */
+    public function fluentCanUseTagToChangeJoinSelectTable()
+    {
+        $fluent = $this->entityAssistant
+            ->fluent(GridProduct::class)
+            ->selectEntityProperties()
+            ->fromEntityDataSources(null, null, 'slightly_diff_join')
+            ->where('`p`.`id` = %i', 25);
+
+        /** @var GridProduct $product */
+        $product = $fluent->fetch();
+        $this->assertEquals(25, $product->getId());
+        $this->assertEquals(1, $product->getImageId());
+        $this->assertEquals('amazing bedsheet', $product->getName());
+        $this->assertEquals(12.5, $product->getPrice());
+        $this->assertEquals('/path/to/image', $product->getImage());
+
+        $this->assertEquals('SELECT `p`.`id` AS `id` , `p`.`name` AS `name` , `p`.`image_id` AS `imageId` , `p`.`price` AS `price` , `img`.`path` AS `image` FROM `products` AS `p`  LEFT JOIN `images` `img` ON `p`.`image_id` = `img`.`id` WHERE `p`.`id` = 25', $fluent->__toString());
+    }
 
 
 	/**
@@ -137,7 +185,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertInternalType('int', $imgId = $this->entityAssistant->insert($product, 'img'));
 		$product->setImageId($imgId);
-		$this->assertInternalType('int', $id = $this->entityAssistant->insert($product, 'products'));
+		$this->assertInternalType('int', $id = $this->entityAssistant->insert($product, 'p'));
 
 		$data = $this->connection->select('name, price, image_id')->from('products')->where('`id` = %i', $id)->fetch();
 		$this->assertEquals('black mirror', $data['name']);
@@ -158,7 +206,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 		$product->setName('really amazing bedsheet');
 		$product->setImage('/new/path');
 
-		$affectedRows = $this->entityAssistant->update($product, ['products', 'img']);
+		$affectedRows = $this->entityAssistant->update($product, ['p', 'img']);
 
 		$this->assertEquals(2, $affectedRows);
 

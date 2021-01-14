@@ -61,7 +61,7 @@ class Fluent extends \Dibi\Fluent
 				} else {
 					$this->select('%n', sprintf(
 						'%s.%s',
-						$column->getTableInfo()->getIdentifier(),
+						$column->getTableIdentifier(),
 						$column->getColumnName()
 					))->as($column->getPropertyName());
 				}
@@ -73,12 +73,13 @@ class Fluent extends \Dibi\Fluent
 	/**
 	 * @param string[] $propertyList If present, Pillar will try to include only those tables that are needed to select these properties. This might not work 100% of the times, mostly if there is a `silent mid-table` in the joins. In this case use @see $additionalTableList
 	 * @param string[] $additionalTableList If present, those tables will be used instead of (default) all tables.
+	 * @param string $tag If present, tables tagged with $tag will be used instead of (default) all tables.
 	 *
 	 * @return $this
 	 */
-	public function fromEntityDataSources(array $propertyList = null, array $additionalTableList = null)
+	public function fromEntityDataSources(array $propertyList = null, array $additionalTableList = null, string $tag = null): self
 	{
-		$tables = $this->entityMapping->getTables();
+		$tables = $this->entityMapping->getTables($tag);
 
 		$primaryTable = array_shift($tables);
 
@@ -89,27 +90,23 @@ class Fluent extends \Dibi\Fluent
 
 		$additionalTables = [];
 		if ($additionalTableList !== null) {
-			$additionalTables = array_filter($tables, function (TableInfo $tableInfo) use ($additionalTableList) {
-				return in_array($tableInfo->getIdentifier(), $additionalTableList);
-			});
+			$additionalTables = array_filter($tables, fn (TableInfo $tableInfo) => in_array($tableInfo->getIdentifier(), $additionalTableList));
 		}
 
-		$innerJoinTables = array_filter($tables, function (TableInfo $tableInfo) {
-			return (strtolower(substr($tableInfo->getSqlJoinCode(), 0, 5)) === 'inner');
-		});
+		$innerJoinTables = array_filter($tables, fn (TableInfo $tableInfo) => (strtolower(substr($tableInfo->getSqlJoinCode(), 0, 5)) === 'inner'));
 
 		if ($propertyList || $additionalTableList) {
 			// in case I wish to restrict the result
 			$tables = array_unique(array_merge($innerJoinTables, $propertyTables, $additionalTables), SORT_REGULAR);
 		}
 
-		if ($primaryTable->getSqlJoinCode()) {
-			$fromCodeParts = preg_split('/\\s+/', $primaryTable->getSqlJoinCode(), 2);
-			if (count($fromCodeParts) == 2) {
-				$this->__call($fromCodeParts[0], [$fromCodeParts[1]]);
-			} else {
-				$this->__call('FROM', [$primaryTable->getSqlJoinCode()]);
+		if ($primaryTable->getSqlJoinCode() !== null) {
+			$fromCode = $primaryTable->getSqlJoinCode();
+			$fromCodeParts = preg_split('/\\s+/', $fromCode, 2);
+			if (count($fromCodeParts) >= 1 && strtolower($fromCodeParts[0]) == 'from') {
+				$fromCode = $fromCodeParts[1];
 			}
+			$this->__call('FROM', [$fromCode]);
 		} else {
 			$this->from(sprintf(
 				'`%s` AS `%s`',
@@ -133,6 +130,10 @@ class Fluent extends \Dibi\Fluent
 		// tables that should not be important to select correct row (ie. left joins)
 		/** @var TableInfo[] $optionalTables */
 		$optionalTables = array_filter($this->entityMapping->getTables(), function (TableInfo $tableInfo) {
+			// tables without sql join code are probably special, not optional
+			if ($tableInfo->getSqlJoinCode() === null) {
+				return false;
+			}
 			return (strtolower(substr($tableInfo->getSqlJoinCode(), 0, 4)) === 'left');
 		});
 
@@ -188,7 +189,7 @@ class Fluent extends \Dibi\Fluent
 			$this->orderBy(
 				$sorting->getDibiRepresentation(), sprintf(
 					'%s.%s',
-					$columnInfo->getTableInfo()->getIdentifier(),
+					$columnInfo->getTableIdentifier(),
 					$columnInfo->getColumnName()
 				),
 				$directionMap->fromEnum($sorting->getDirection())

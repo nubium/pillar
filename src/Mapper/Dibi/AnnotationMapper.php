@@ -52,10 +52,11 @@ class AnnotationMapper implements IMapper
 
 				if ($classAnnotation instanceof Table) {
 					$identifier = $classAnnotation->getIdentifier() ?: $classAnnotation->getName();
-					$tableInfoList[$identifier] = new TableInfo(
+					$tableInfoList[] = new TableInfo(
 						$classAnnotation->getName(),
 						$identifier,
-						$classAnnotation->getCode()
+						$classAnnotation->getCode(),
+						$classAnnotation->getTags(),
 					);
 				}
 
@@ -79,7 +80,16 @@ class AnnotationMapper implements IMapper
 						$danglingProperty = true;
 					}
 
-					if (!isset($tableInfoList[$propertyAnnotation->getTable()])) {
+					$hasTableDefinition = (function() use ($tableInfoList): bool {
+						/** @var TableInfo $tableInfo */
+						foreach ($tableInfoList as $tableInfo) {
+							if ($tableInfo->getIdentifier()) {
+								return true;
+							}
+						}
+						return false;
+					})();
+					if (!$hasTableDefinition) {
 						// this is possibly not a mistake - property may have multiple Column annotations, and not be using all at once in the current entity
 						continue;
 //						throw new EntityMappingException(sprintf('Entity :`%s` property: `%s` is mapped to table identified as: `%s`, but no such table identifier is present.', $className, $property->getName(), $propertyAnnotation->getTable()));
@@ -89,7 +99,7 @@ class AnnotationMapper implements IMapper
 					$columnInfoList[] = new ColumnInfo(
 						$propertyAnnotation->getName() ?: $property->getName(),
 						$property->getName(),
-						$tableInfoList[$propertyAnnotation->getTable()],
+						$propertyAnnotation->getTable(),
 						$propertyAnnotation->isPrimary(),
 						$propertyAnnotation->isDeprecated(),
 						$enabledForSelect,

@@ -6,29 +6,30 @@ use SpareParts\Pillar\Entity\IEntity;
 use SpareParts\Pillar\Mapper\Annotation as Pillar;
 
 /**
- * --@Entity\Storage(type="mysql")
- * @Pillar\Table(name="products")
- * @Pillar\Table(name="images", identifier="img", code="LEFT JOIN `images` `img` ON `img`.`id` = `products`.`image_id`")
- *
- * --@Entity\Cache(tags={"product", "product:$id"})
+ * @Pillar\Table(name="products", identifier="p")
+ * @Pillar\Table(name="products", identifier="p", code="`products` `p` USE INDEX (`idx_try_me_out`)",
+ *     tags={"idx"})
+ * @Pillar\Table(name="images", identifier="img", code="LEFT JOIN `images` `img` ON `img`.`id` = `p`.`image_id`")
+ * @Pillar\Table(name="images", identifier="img", code="LEFT JOIN `images` `img` ON `p`.`image_id` = `img`.`id`",
+ *     tags={"slightly_diff_join"})
  */
 class GridProduct extends Entity implements IEntity
 {
 	/**
 	 * @var string
-	 * @Pillar\Column(table="products", primary=true)
+	 * @Pillar\Column(table="p", primary=true)
 	 */
 	protected $id;
 
 	/**
 	 * @var string
-	 * @Pillar\Column(table="products")
+	 * @Pillar\Column(table="p")
 	 */
 	protected $name;
 
 	/**
 	 * @var int
-	 * @Pillar\Column(name="image_id", table="products")
+	 * @Pillar\Column(name="image_id", table="p")
 	 * @Pillar\Column(name="id", table="img", primary=true)
 	 */
 	protected $imageId;
@@ -41,9 +42,11 @@ class GridProduct extends Entity implements IEntity
 
 	/**
 	 * @var float
-	 * @Pillar\Column(table="products")
+	 * @Pillar\Column(table="p")
 	 */
 	protected $price;
+
+
 
 	/**
 	 * @return string

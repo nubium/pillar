@@ -355,18 +355,24 @@ class DibiEntityAssistant
 	 */
 	private function sanitizeTableInfos(IEntity $entity, array $tables = null): array
 	{
+		if ($tables !== null) {
+			$tables = array_unique($tables);
+		}
+
 		$mapping = $this->mapper->getEntityMapping($entity);
 		$tableInfos = $mapping->getTables();
-		if (!is_null($tables)) {
-			// grab TableInfo of given $tables
-			$tableInfos = array_map(function ($tableName) use ($tableInfos, $entity) {
-				if (!isset($tableInfos[ $tableName ])) {
-					throw new UnableToSaveException(sprintf('Unable to save entity: `%s`, unknown table `%s`',
-						get_class($entity), $tableName));
-				}
+		if ($tables === null) {
+			return $tableInfos;
+		}
 
-				return $tableInfos[ $tableName ];
-			}, $tables);
+		$tableInfos = array_filter(
+			$tableInfos,
+			fn (TableInfo $tableInfo) => in_array($tableInfo->getIdentifier(), $tables)
+		);
+		if (count($tableInfos) !== count ($tables)) {
+			$foundNames = array_map(fn(TableInfo $tableInfo) => $tableInfo->getIdentifier(), $tableInfos);
+			throw new UnableToSaveException(sprintf('Unable to save entity: `%s`, unknown tables `%s`',
+				get_class($entity), implode(', ', array_diff($tables, $foundNames))));
 		}
 
 		return $tableInfos;
@@ -460,10 +466,19 @@ class DibiEntityAssistant
 	private function getTableInfoByTableName(IEntity $entity, IEntityMapping $mapping, string $tableName): TableInfo
 	{
 		$tableInfos = $mapping->getTables();
-		if (!isset($tableInfos[$tableName])) {
+
+		$tableInfo = (function ($tableName) use ($tableInfos): ?TableInfo {
+			foreach ($tableInfos as $tableInfo) {
+				if ($tableInfo->getIdentifier() === $tableName) {
+					return $tableInfo;
+				}
+			}
+			return null;
+		}) ($tableName);
+
+		if ($tableInfo === null) {
 			throw new UnableToSaveException(sprintf('Unable to save entity: `%s`, unknown table `%s`', get_class($entity), $tableName));
 		}
-		$tableInfo = $tableInfos[$tableName];
 		return $tableInfo;
 	}
 }

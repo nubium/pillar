@@ -8,10 +8,7 @@ class ColumnInfo
 
 	private string $propertyName;
 
-	/**
-	 * @var TableInfo
-	 */
-	private $tableInfo;
+	private string $tableIdentifier;
 
 	private bool $isPrimaryKey;
 
@@ -24,16 +21,16 @@ class ColumnInfo
 	 */
 	private $isDeprecated;
 
-	public function __construct($columnName, $propertyName, TableInfo $tableInfo, $isPrimaryKey, $isDeprecated, $enabledForSelect, $customSelectSql = null)
+	public function __construct(string $columnName, string $propertyName, string $tableIdentifier, bool $isPrimaryKey, bool $isDeprecated, $enabledForSelect, string $customSelectSql = null)
 	{
 		$this->columnName = $columnName;
 		$this->propertyName = $propertyName;
-		$this->tableInfo = $tableInfo;
 		$this->isPrimaryKey = $isPrimaryKey;
 		$this->enabledForSelect = $enabledForSelect;
 		$this->customSelectSql = $customSelectSql;
 		$this->isDeprecated = $isDeprecated;
-	}
+        $this->tableIdentifier = $tableIdentifier;
+    }
 
 	public function getColumnName(): string
 	{
@@ -45,9 +42,9 @@ class ColumnInfo
 		return $this->propertyName;
 	}
 
-	public function getTableInfo()
+	public function getTableIdentifier(): string
 	{
-		return $this->tableInfo;
+		return $this->tableIdentifier;
 	}
 
 	public function isPrimaryKey(): bool

@@ -9,11 +9,15 @@ class TableInfo
 
 	private ?string $sqlJoinCode;
 
-	public function __construct($name, $identifier, $sqlJoinCode = null)
+	/** @var null|string[] */
+	private ?array $tags;
+
+	public function __construct(string $name, string $identifier, string $sqlJoinCode = null, array $tags = null)
 	{
 		$this->name = $name;
 		$this->identifier = $identifier;
 		$this->sqlJoinCode = $sqlJoinCode;
+		$this->tags = $tags;
 	}
 
 	public function getName(): string
@@ -29,5 +33,13 @@ class TableInfo
 	public function getSqlJoinCode(): ?string
 	{
 		return $this->sqlJoinCode;
+	}
+
+	/**
+	 * @return string[]|null
+	 */
+	public function getTags(): ?array
+	{
+		return $this->tags;
 	}
 }

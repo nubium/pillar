@@ -22,3 +22,6 @@ create table images
 ALTER TABLE products
 ADD CONSTRAINT products_images_id_fk
 FOREIGN KEY (image_id) REFERENCES images (id);
+
+CREATE INDEX idx_try_me_out ON products(name);
+CREATE INDEX idx_img ON images(path);

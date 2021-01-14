@@ -11,7 +11,7 @@ interface IEntityMapping
 	/**
 	 * @return TableInfo[]
 	 */
-	public function getTables();
+	public function getTables(?string $tag = null): array;
 
 	/**
 	 * @param string $tableIdentifier
