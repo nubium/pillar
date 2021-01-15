@@ -3,10 +3,6 @@ namespace SpareParts\Pillar\Test\Integration;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
-use PHPUnit\DbUnit\DataSet\ArrayDataSet;
-use PHPUnit\DbUnit\TestCaseTrait;
 use SpareParts\Pillar\Adapter\Dibi\DibiConnectionProvider;
 use SpareParts\Pillar\Assistant\Dibi\DibiEntityAssistant;
 use SpareParts\Pillar\Entity\EntityFactory;
@@ -15,28 +11,24 @@ use SpareParts\Pillar\Test\Fixtures\GridProduct;
 
 class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 {
-	use TestCaseTrait {
-		setUp as dbunit_setUp;
-	}
-
 	/** @var DibiEntityAssistant */
 	protected $entityAssistant;
 
 	/** @var \Dibi\Connection */
 	protected $connection;
 
-	public function setUp()
+	public function setUp(): void
 	{
-		$this->dbunit_setUp();
+		$this->prepareDatabase();
 
 		AnnotationRegistry::registerLoader("class_exists");
 
 		$mapper = new AnnotationMapper(new AnnotationReader());
 		$entityFactory = new EntityFactory();
 		$this->connection = new \Dibi\Connection([
-			'host' => '127.0.0.1',
-			'username' => 'travis',
-			'password' => '',
+			'host' => 'mariadb',
+			'username' => 'root',
+			'password' => 'qqq',
 			'database' => 'testdb',
 			'charset' => 'utf8',
 			'driver' => 'mysqli',
@@ -183,9 +175,9 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 		$product->setName('black mirror');
 		$product->setPrice(11.1);
 
-		$this->assertInternalType('int', $imgId = $this->entityAssistant->insert($product, 'img'));
+		$this->assertIsInt($imgId = $this->entityAssistant->insert($product, 'img'));
 		$product->setImageId($imgId);
-		$this->assertInternalType('int', $id = $this->entityAssistant->insert($product, 'p'));
+		$this->assertIsInt($id = $this->entityAssistant->insert($product, 'p'));
 
 		$data = $this->connection->select('name, price, image_id')->from('products')->where('`id` = %i', $id)->fetch();
 		$this->assertEquals('black mirror', $data['name']);
@@ -201,7 +193,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function updateCanChangeRowsInMultipleTables()
 	{
-		// this is a sketchy way to prepare fixture enttiy - it depends on knowing of inner workings of pillar. Should probably use mock instead, but am too lazy to do so.
+		// this is a sketchy way to prepare fixture entity - it depends on knowing of inner workings of pillar. Should probably use mock instead, but am too lazy to do so.
 		$product = new GridProduct(['id' => 25, 'imageId' => 1]);
 		$product->setName('really amazing bedsheet');
 		$product->setImage('/new/path');
@@ -227,10 +219,9 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 		], $data[0]->toArray());
 	}
 
-	protected function getConnection()
+	protected function createConnection(): \PDO
 	{
-		$pdo = new \PDO('mysql:host=127.0.0.1;dbname=testdb', 'travis', '', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
-		return $this->createDefaultDBConnection($pdo);
+		return new \PDO('mysql:host=mariadb;dbname=testdb', 'root', 'qqq', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
 	}
 
 	protected function getDataSet()
@@ -251,5 +242,17 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 				]
 			],
 		]);
+	}
+
+	private function prepareDatabase(): void
+	{
+		$pdo = $this->createConnection();
+
+		$pdo->query('DELETE FROM products')->execute();
+		$pdo->query('DELETE FROM images')->execute();
+
+		$pdo->prepare('INSERT INTO images(id, path) VALUES(1, ?)')->execute(['/path/to/image']);
+		$pdo->prepare('INSERT INTO products(id, image_id, price, name) VALUES(25, 1, 12.5, ?)')
+			->execute(['amazing bedsheet']);
 	}
 }
