@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Assistant\Dibi;
 
 use SpareParts\Pillar\Entity\IEntity;
@@ -31,11 +31,6 @@ class DibiEntityAssistant
 	private $entityPropertiesCache = [];
 
 
-	/**
-	 * @param IMapper $mapper
-	 * @param IConnectionProvider $connectionProvider
-	 * @param IEntityFactory $entityFactory
-	 */
 	public function __construct(IMapper $mapper, IEntityFactory $entityFactory, IConnectionProvider $connectionProvider)
 	{
 		$this->mapper = $mapper;
@@ -49,7 +44,7 @@ class DibiEntityAssistant
 	 * @return Fluent
 	 * @throws \SpareParts\Pillar\Mapper\EntityMappingException
 	 */
-	public function fluent($entityClassOrInstance, $returnEntities = true)
+	public function fluent($entityClassOrInstance, bool $returnEntities = true): Fluent
 	{
 		$mapping = $this->mapper->getEntityMapping($entityClassOrInstance);
 		if ($mapping->isVirtualEntity()) {
@@ -72,7 +67,7 @@ class DibiEntityAssistant
 	 * @return Fluent
 	 * @throws \SpareParts\Pillar\Mapper\EntityMappingException
 	 */
-	public function fluentForAggregateCalculations($entityClassOrInstance)
+	public function fluentForAggregateCalculations($entityClassOrInstance): Fluent
 	{
 		$fluent = new Fluent(
 			$this->connectionProvider->getConnection(),
@@ -94,7 +89,7 @@ class DibiEntityAssistant
 	 * @throws \Dibi\Exception
 	 * @throws \InvalidArgumentException
 	 */
-	public function update(IEntity $entity, array $tables = null)
+	public function update(IEntity $entity, array $tables = null): int
 	{
 		$mapping = $this->mapper->getEntityMapping($entity);
 		if ($mapping->isVirtualEntity()) {
@@ -206,16 +201,11 @@ class DibiEntityAssistant
 	}
 
 	/**
-	 * @param IEntity $entity
-	 * @param $tableName
-	 *
-	 * @return int
-	 *
 	 * @throws EntityMappingException
 	 * @throws UnableToSaveException
 	 * @throws \Dibi\Exception
 	 */
-	public function delete(IEntity $entity, $tableName)
+	public function delete(IEntity $entity, string $tableName): int
 	{
 		$mapping = $this->mapper->getEntityMapping($entity);
 
@@ -247,7 +237,7 @@ class DibiEntityAssistant
 	 *
 	 * @throws UnableToSaveException
 	 */
-	private function addPKToFluent(IEntity $entity, $tableName, $columns, \Dibi\Fluent $fluent)
+	private function addPKToFluent(IEntity $entity, string $tableName, array $columns, \Dibi\Fluent $fluent): \Dibi\Fluent
 	{
 		/** @var ColumnInfo[] $pkColumns */
 		$pkColumns = array_filter($columns, function (ColumnInfo $columnInfo) {
@@ -274,11 +264,10 @@ class DibiEntityAssistant
 	}
 
 	/**
-	 * @param $entityClassName
-	 * @return array
+	 * @return string[]
 	 * @throws \SpareParts\Pillar\Mapper\EntityMappingException
 	 */
-	private function getEntityProperties($entityClassName)
+	private function getEntityProperties(string $entityClassName): array
 	{
 		if (!isset($this->entityPropertiesCache[$entityClassName])) {
 			$mapping = $this->mapper->getEntityMapping($entityClassName);
@@ -333,7 +322,7 @@ class DibiEntityAssistant
 	 * @param string[] $changedProperties
 	 * @return ColumnInfo[]
 	 */
-	private function prepareListToUpdate(array $columnInfos, array $changedProperties)
+	private function prepareListToUpdate(array $columnInfos, array $changedProperties): array
 	{
 		$columnInfoListToUpdate = array_filter(
 			$columnInfos,
@@ -364,20 +353,26 @@ class DibiEntityAssistant
 	 * @return TableInfo[]
 	 * @throws EntityMappingException
 	 */
-	private function sanitizeTableInfos(IEntity $entity, array $tables = null)
+	private function sanitizeTableInfos(IEntity $entity, array $tables = null): array
 	{
+		if ($tables !== null) {
+			$tables = array_unique($tables);
+		}
+
 		$mapping = $this->mapper->getEntityMapping($entity);
 		$tableInfos = $mapping->getTables();
-		if (!is_null($tables)) {
-			// grab TableInfo of given $tables
-			$tableInfos = array_map(function ($tableName) use ($tableInfos, $entity) {
-				if (!isset($tableInfos[ $tableName ])) {
-					throw new UnableToSaveException(sprintf('Unable to save entity: `%s`, unknown table `%s`',
-						get_class($entity), $tableName));
-				}
+		if ($tables === null) {
+			return $tableInfos;
+		}
 
-				return $tableInfos[ $tableName ];
-			}, $tables);
+		$tableInfos = array_filter(
+			$tableInfos,
+			fn (TableInfo $tableInfo) => in_array($tableInfo->getIdentifier(), $tables)
+		);
+		if (count($tableInfos) !== count ($tables)) {
+			$foundNames = array_map(fn(TableInfo $tableInfo) => $tableInfo->getIdentifier(), $tableInfos);
+			throw new UnableToSaveException(sprintf('Unable to save entity: `%s`, unknown tables `%s`',
+				get_class($entity), implode(', ', array_diff($tables, $foundNames))));
 		}
 
 		return $tableInfos;
@@ -388,7 +383,7 @@ class DibiEntityAssistant
 	 * @param TableInfo $tableInfo
 	 * @return ColumnInfo[]
 	 */
-	private function getColumnInfosForTable(IEntityMapping $mapping, TableInfo $tableInfo)
+	private function getColumnInfosForTable(IEntityMapping $mapping, TableInfo $tableInfo): array
 	{
 		/** @var ColumnInfo[] $columnInfos */
 		$columnInfos = [];
@@ -409,7 +404,7 @@ class DibiEntityAssistant
 		IEntity $entity,
 		IEntityMapping $entityMapping,
 		TableInfo $tableInfo
-	) {
+	): ?array {
 		// we need array key of ColumnInfo[] to be the column name for easy handling
 		$columnInfos = $this->getColumnInfosForTable($entityMapping, $tableInfo);
 
@@ -449,12 +444,9 @@ class DibiEntityAssistant
 	}
 
 	/**
-	 * @param IEntity $entity
-	 * @param IEntityMapping $mapping
-	 * @param TableInfo $tableInfo
 	 * @return mixed[]
 	 */
-	private function getValuesToUpdate(IEntity $entity, $mapping, TableInfo $tableInfo)
+	private function getValuesToUpdate(IEntity $entity, IEntityMapping $mapping, TableInfo $tableInfo): array
 	{
 		// we need array key of ColumnInfo[] to be the column name for easy handling
 		$columnInfos = $this->getColumnInfosForTable($mapping, $tableInfo);
@@ -471,19 +463,22 @@ class DibiEntityAssistant
 		return $columnValuesToStore;
 	}
 
-	/**
-	 * @param IEntity $entity
-	 * @param IEntityMapping $mapping
-	 * @param string $tableName
-	 * @return TableInfo
-	 */
-	private function getTableInfoByTableName(IEntity $entity, IEntityMapping $mapping, $tableName)
+	private function getTableInfoByTableName(IEntity $entity, IEntityMapping $mapping, string $tableName): TableInfo
 	{
 		$tableInfos = $mapping->getTables();
-		if (!isset($tableInfos[$tableName])) {
+
+		$tableInfo = (function ($tableName) use ($tableInfos): ?TableInfo {
+			foreach ($tableInfos as $tableInfo) {
+				if ($tableInfo->getIdentifier() === $tableName) {
+					return $tableInfo;
+				}
+			}
+			return null;
+		}) ($tableName);
+
+		if ($tableInfo === null) {
 			throw new UnableToSaveException(sprintf('Unable to save entity: `%s`, unknown table `%s`', get_class($entity), $tableName));
 		}
-		$tableInfo = $tableInfos[$tableName];
 		return $tableInfo;
 	}
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Mapper\Annotation;
 
 use Doctrine\Common\Annotations\Annotation\Required;
@@ -9,21 +9,19 @@ use Doctrine\Common\Annotations\Annotation\Required;
  */
 class Table implements IPillarAnnotation
 {
+    const DEFAULT_TAG = 'default';
+
 	/**
-	 * @var string
 	 * @Required()
 	 */
-	protected $name;
+	protected string $name;
 
-	/**
-	 * @var string
-	 */
-	protected $identifier;
+	protected string $identifier = '';
 
-	/**
-	 * @var string
-	 */
-	protected $code;
+	protected ?string $code = null;
+
+    /** @var null|string[] */
+	protected ?array $tags = null;
 
 	public function __construct($values)
 	{
@@ -40,29 +38,31 @@ class Table implements IPillarAnnotation
 		if (isset($values['code'])) {
 			$this->code = $values['code'];
 		}
+		if (isset($values['tags'])) {
+			$this->tags = $values['tags'];
+		}
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getIdentifier()
+	public function getIdentifier(): string
 	{
 		return $this->identifier;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getCode()
+	public function getCode(): ?string
 	{
 		return $this->code;
 	}
+
+    /**
+     * @return string[]|null
+     */
+    public function getTags(): ?array
+    {
+        return $this->tags;
+    }
 }

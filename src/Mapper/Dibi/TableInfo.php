@@ -1,58 +1,45 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Mapper\Dibi;
 
 class TableInfo
 {
-	/**
-	 * @var string
-	 */
-	private $name;
+	private string $name;
 
-	/**
-	 * @var string
-	 */
-	private $identifier;
+	private string $identifier;
 
-	/**
-	 * @var string|null
-	 */
-	private $sqlJoinCode;
+	private ?string $sqlJoinCode;
 
-	/**
-	 * TableInfo constructor.
-	 *
-	 * @param string $name
-	 * @param string $identifier
-	 * @param string|null $sqlJoinCode
-	 */
-	public function __construct($name, $identifier, $sqlJoinCode = null)
+	/** @var null|string[] */
+	private ?array $tags;
+
+	public function __construct(string $name, string $identifier, string $sqlJoinCode = null, array $tags = null)
 	{
 		$this->name = $name;
 		$this->identifier = $identifier;
 		$this->sqlJoinCode = $sqlJoinCode;
+		$this->tags = $tags;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getIdentifier()
+	public function getIdentifier(): string
 	{
 		return $this->identifier;
 	}
 
-	/**
-	 * @return null|string
-	 */
-	public function getSqlJoinCode()
+	public function getSqlJoinCode(): ?string
 	{
 		return $this->sqlJoinCode;
+	}
+
+	/**
+	 * @return string[]|null
+	 */
+	public function getTags(): ?array
+	{
+		return $this->tags;
 	}
 }

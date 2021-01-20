@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Mapper;
 
 use SpareParts\Pillar\Entity\IEntity;
@@ -11,5 +11,5 @@ interface IMapper
 	 * @return IEntityMapping
 	 * @throws EntityMappingException
 	 */
-	public function getEntityMapping($classnameOrInstance);
+	public function getEntityMapping($classnameOrInstance): IEntityMapping;
 }

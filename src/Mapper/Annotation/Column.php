@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Mapper\Annotation;
 
 use Doctrine\Common\Annotations\Annotation\Required;
@@ -10,31 +10,20 @@ use Doctrine\Common\Annotations\Annotation\Required;
 class Column implements IPillarAnnotation
 {
 	/**
-	 * @var string
 	 * @Required()
 	 */
-	protected $name;
+	protected ?string $name = null;
 
 	/**
-	 * @var string
 	 * @Required()
 	 */
-	protected $table;
+	protected string $table;
 
-	/**
-	 * @var string|null
-	 */
-	protected $customSelect;
+	protected ?string $customSelect = null;
 
-	/**
-	 * @var bool
-	 */
-	protected $deprecated = false;
+	protected bool $deprecated = false;
 
-	/**
-	 * @var bool
-	 */
-	protected $primary = false;
+	protected bool $primary = false;
 
 	public function __construct($values)
 	{
@@ -58,42 +47,27 @@ class Column implements IPillarAnnotation
 		}
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName()
+	public function getName(): ?string
 	{
 		return $this->name;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTable()
+	public function getTable(): string
 	{
 		return $this->table;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isPrimary()
+	public function isPrimary(): bool
 	{
 		return $this->primary;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isDeprecated()
+	public function isDeprecated(): bool
 	{
 		return $this->deprecated;
 	}
 
-	/**
-	 * @return string|null
-	 */
-	public function getCustomSelect()
+	public function getCustomSelect(): ?string
 	{
 		return $this->customSelect;
 	}

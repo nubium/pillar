@@ -1,116 +1,68 @@
-<?php
+<?php declare(strict_types=1);
 namespace SpareParts\Pillar\Mapper\Dibi;
 
 
 class ColumnInfo
 {
-	/**
-	 * @var string
-	 */
-	private $columnName;
+	private string $columnName;
 
-	/**
-	 * @var string
-	 */
-	private $propertyName;
+	private string $propertyName;
 
-	/**
-	 * @var TableInfo
-	 */
-	private $tableInfo;
+	private string $tableIdentifier;
 
-	/**
-	 * @var bool
-	 */
-	private $isPrimaryKey;
+	private bool $isPrimaryKey;
 
-	/**
-	 * @var bool
-	 */
-	private $enabledForSelect = true;
+	private bool $enabledForSelect = true;
 
-	/**
-	 * @var string|null
-	 */
-	private $customSelectSql;
+	private ?string $customSelectSql;
 
 	/**
 	 * @var bool
 	 */
 	private $isDeprecated;
 
-	/**
-	 * @param string $columnName
-	 * @param string $propertyName
-	 * @param TableInfo $tableInfo
-	 * @param bool $isPrimaryKey
-	 * @param bool $isDeprecated
-	 * @param bool $enabledForSelect
-	 * @param null $customSelectSql
-	 */
-	public function __construct($columnName, $propertyName, TableInfo $tableInfo, $isPrimaryKey, $isDeprecated, $enabledForSelect, $customSelectSql = null)
+	public function __construct(string $columnName, string $propertyName, string $tableIdentifier, bool $isPrimaryKey, bool $isDeprecated, $enabledForSelect, string $customSelectSql = null)
 	{
 		$this->columnName = $columnName;
 		$this->propertyName = $propertyName;
-		$this->tableInfo = $tableInfo;
 		$this->isPrimaryKey = $isPrimaryKey;
 		$this->enabledForSelect = $enabledForSelect;
 		$this->customSelectSql = $customSelectSql;
 		$this->isDeprecated = $isDeprecated;
-	}
+        $this->tableIdentifier = $tableIdentifier;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getColumnName()
+	public function getColumnName(): string
 	{
 		return $this->columnName;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getPropertyName()
+	public function getPropertyName(): string
 	{
 		return $this->propertyName;
 	}
 
-	/**
-	 * @return TableInfo
-	 */
-	public function getTableInfo()
+	public function getTableIdentifier(): string
 	{
-		return $this->tableInfo;
+		return $this->tableIdentifier;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isPrimaryKey()
+	public function isPrimaryKey(): bool
 	{
 		return $this->isPrimaryKey;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isDeprecated()
+	public function isDeprecated(): bool
 	{
 		return $this->isDeprecated;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isEnabledForSelect()
+	public function isEnabledForSelect(): bool
 	{
 		return $this->enabledForSelect;
 	}
 
-	/**
-	 * @return string|null
-	 */
-	public function getCustomSelectSql()
+	public function getCustomSelectSql(): ?string
 	{
 		return $this->customSelectSql;
 	}
