@@ -19,32 +19,32 @@ class GridProduct extends Entity implements IEntity
 	 * @var string
 	 * @Pillar\Column(table="p", primary=true)
 	 */
-	protected $id;
+	protected string $id;
 
 	/**
 	 * @var string
 	 * @Pillar\Column(table="p")
 	 */
-	protected $name;
+	protected string $name;
 
 	/**
 	 * @var int
 	 * @Pillar\Column(name="image_id", table="p")
 	 * @Pillar\Column(name="id", table="img", primary=true)
 	 */
-	protected $imageId;
+	protected int $imageId;
 
 	/**
 	 * @var string
 	 * @Pillar\Column(table="img", name="path")
 	 */
-	protected $image;
+	protected string $image;
 
 	/**
 	 * @var float
 	 * @Pillar\Column(table="p")
 	 */
-	protected $price;
+	protected float $price;
 
 
 
