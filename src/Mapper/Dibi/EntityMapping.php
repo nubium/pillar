@@ -56,7 +56,7 @@ class EntityMapping implements IEntityMapping
 		foreach ($this->tableInfoList as $identifier => $possibleTables) {
 
 			// TAG INTERSECTION
-			$resultList[] = (function() use ($tag, $possibleTables): TableInfo {
+			$resultList[] = (function() use ($tag, $possibleTables): ?TableInfo {
 
 				foreach ($possibleTables as $possibleTable) {
 					// for no tag present, choose table with no tags or with `default` tag
@@ -75,11 +75,15 @@ class EntityMapping implements IEntityMapping
 					}
 				}
 				// if no table could be chosen, just take first one
-				return reset ($possibleTables);
+				$result = reset($possibleTables);
+				if ($result === false) {
+					return null;
+				}
 
+				return $result;
 			})();
 		}
-		return $resultList;
+		return array_filter($resultList, fn ($result) => $result !== null);
 	}
 
 	/**

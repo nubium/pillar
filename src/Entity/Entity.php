@@ -14,7 +14,7 @@ class Entity implements IEntity
 	private array $_originalValues;
 
 	/**
-	 * @param array $data
+	 * @param array<mixed> $data
 	 */
 	public function __construct(array $data = []) {
 		$this->_originalValues = $data;

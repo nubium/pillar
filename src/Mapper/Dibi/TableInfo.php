@@ -12,6 +12,9 @@ class TableInfo
 	/** @var null|string[] */
 	private ?array $tags;
 
+	/**
+	 * @param string[]|null $tags
+	 */
 	public function __construct(string $name, string $identifier, string $sqlJoinCode = null, array $tags = null)
 	{
 		$this->name = $name;

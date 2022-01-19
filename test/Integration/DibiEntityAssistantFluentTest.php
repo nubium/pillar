@@ -45,7 +45,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * @test
 	 */
-	public function fluentCanLoadEntityById()
+	public function fluentCanLoadEntityById(): void
 	{
 		/** @var GridProduct $product */
 		$product = $this->entityAssistant
@@ -68,7 +68,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * @test
 	 */
-	public function fluentCanUseAggregateSelectAndOmitJoinTable()
+	public function fluentCanUseAggregateSelectAndOmitJoinTable(): void
 	{
 		$fluent = $this->entityAssistant
 			->fluentForAggregateCalculations(GridProduct::class)
@@ -86,7 +86,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * @test
 	 */
-	public function fluentCanUseAggregateSelectAndNotOmitJoinTable()
+	public function fluentCanUseAggregateSelectAndNotOmitJoinTable(): void
 	{
 		$fluent = $this->entityAssistant
 			->fluentForAggregateCalculations(GridProduct::class)
@@ -104,7 +104,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * @test
 	 */
-	public function fluentCanUseAggregateSelect()
+	public function fluentCanUseAggregateSelect(): void
 	{
 		$fluent = $this->entityAssistant
 			->fluentForAggregateCalculations(GridProduct::class)
@@ -121,7 +121,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function fluentCanUseTagToChangePrimarySelectTable()
+    public function fluentCanUseTagToChangePrimarySelectTable(): void
     {
         $fluent = $this->entityAssistant
             ->fluent(GridProduct::class)
@@ -144,7 +144,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function fluentCanUseTagToChangeJoinSelectTable()
+    public function fluentCanUseTagToChangeJoinSelectTable(): void
     {
         $fluent = $this->entityAssistant
             ->fluent(GridProduct::class)
@@ -168,7 +168,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 	 * @throws \Dibi\Exception
 	 * @test
 	 */
-	public function insertCanCreateNewRow()
+	public function insertCanCreateNewRow(): void
 	{
 		$product = new GridProduct();
 		$product->setImage('path/to/image/i/guess');
@@ -176,22 +176,26 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 		$product->setPrice(11.1);
 
 		$this->assertIsInt($imgId = $this->entityAssistant->insert($product, 'img'));
+
 		$product->setImageId($imgId);
 		$this->assertIsInt($id = $this->entityAssistant->insert($product, 'p'));
 
 		$data = $this->connection->select('name, price, image_id')->from('products')->where('`id` = %i', $id)->fetch();
+
+        $this->assertNotNull($data);
 		$this->assertEquals('black mirror', $data['name']);
 		$this->assertEquals(11.1, $data['price']);
 		$this->assertEquals($imgId, $data['image_id']);
 
 		$data = $this->connection->select('path')->from('images')->where('`id` = %i', $imgId)->fetch();
+        $this->assertNotNull($data);
 		$this->assertEquals('path/to/image/i/guess', $data['path']);
 	}
 
 	/**
 	 * @test
 	 */
-	public function updateCanChangeRowsInMultipleTables()
+	public function updateCanChangeRowsInMultipleTables(): void
 	{
 		// this is a sketchy way to prepare fixture entity - it depends on knowing of inner workings of pillar. Should probably use mock instead, but am too lazy to do so.
 		$product = new GridProduct(['id' => 25, 'imageId' => 1]);
@@ -224,32 +228,19 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 		return new \PDO('mysql:host=mariadb;dbname=testdb', 'root', 'qqq', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
 	}
 
-	protected function getDataSet()
-	{
-		return new ArrayDataSet([
-			'images' => [
-				[
-					'id' => 1,
-					'path' => '/path/to/image',
-				],
-			],
-			'products' => [
-				[
-					'id' => 25,
-					'image_id' => 1,
-					'price' => 12.5,
-					'name' => 'amazing bedsheet',
-				]
-			],
-		]);
-	}
-
 	private function prepareDatabase(): void
 	{
 		$pdo = $this->createConnection();
 
-		$pdo->query('DELETE FROM products')->execute();
-		$pdo->query('DELETE FROM images')->execute();
+        $productsDelete = $pdo->query('DELETE FROM products');
+        $imagesDelete = $pdo->query('DELETE FROM products');
+
+        if ($productsDelete == false || $imagesDelete == false) {
+            throw new \LogicException("Products or images delete query failed");
+        }
+
+		$productsDelete->execute();
+        $imagesDelete->execute();
 
 		$pdo->prepare('INSERT INTO images(id, path) VALUES(1, ?)')->execute(['/path/to/image']);
 		$pdo->prepare('INSERT INTO products(id, image_id, price, name) VALUES(25, 1, 12.5, ?)')

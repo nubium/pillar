@@ -4,8 +4,8 @@ namespace SpareParts\Pillar\Assistant\Dibi\Sorting;
 use SpareParts\Enum\Enum;
 
 /**
- * @method static ASCENDING()
- * @method static DESCENDING()
+ * @method static SortingDirectionEnum ASCENDING()
+ * @method static SortingDirectionEnum DESCENDING()
  */
 class SortingDirectionEnum extends Enum
 {

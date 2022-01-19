@@ -13,7 +13,10 @@ class Storage implements IPillarAnnotation
 	 */
 	protected string $type;
 
-	public function __construct($values)
+	/**
+	 * @param string[] $values
+	 */
+	public function __construct(array $values)
 	{
 		if (isset($values['value'])) {
 			$this->type = $values['value'];

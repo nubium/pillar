@@ -26,18 +26,19 @@ class AnnotationMapper implements IMapper
 	}
 
 	/**
-	 * @param string|IEntity $classnameOrInstance
+	 * @param class-string<IEntity>|IEntity $classnameOrInstance
 	 * @return IEntityMapping
 	 * @throws EntityMappingException
 	 */
 	public function getEntityMapping($classnameOrInstance): IEntityMapping
 	{
-		$className = $classnameOrInstance;
 		if (is_object($classnameOrInstance)) {
 			if (!($classnameOrInstance instanceof IEntity)) {
 				throw new EntityMappingException(sprintf('Expected class implementing IEntity interface, got %s instead', get_class($classnameOrInstance)));
 			}
 			$className = get_class($classnameOrInstance);
+		} else {
+			$className = $classnameOrInstance;
 		}
 
 		if (!isset($this->dibiMappingCache[$className])) {

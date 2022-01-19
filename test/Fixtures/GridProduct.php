@@ -47,83 +47,59 @@ class GridProduct extends Entity implements IEntity
 	protected float $price;
 
 
-
-	/**
-	 * @return string
-	 */
-	public function getId()
+	public function getId(): string
 	{
 		return $this->id;
 	}
 
-	/**
-	 * @param string $id
-	 */
-	public function setId($id)
+
+	public function setId(string $id): void
 	{
 		$this->id = $id;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}
 
-	/**
-	 * @param string $name
-	 */
-	public function setName($name)
+
+	public function setName(string $name): void
 	{
 		$this->name = $name;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getImageId()
+
+	public function getImageId(): int
 	{
 		return $this->imageId;
 	}
 
-	/**
-	 * @param int $imageId
-	 */
-	public function setImageId($imageId)
+
+	public function setImageId(int $imageId): void
 	{
 		$this->imageId = $imageId;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getImage()
+
+	public function getImage(): string
 	{
 		return $this->image;
 	}
 
-	/**
-	 * @param string $image
-	 */
-	public function setImage($image)
+
+	public function setImage(string $image): void
 	{
 		$this->image = $image;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getPrice()
+
+	public function getPrice(): float
 	{
 		return $this->price;
 	}
 
-	/**
-	 * @param float $price
-	 */
-	public function setPrice($price)
+	public function setPrice(float $price): void
 	{
 		$this->price = $price;
 	}

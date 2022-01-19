@@ -25,7 +25,7 @@ class Column implements IPillarAnnotation
 
 	protected bool $primary = false;
 
-	public function __construct($values)
+	public function __construct(array $values)
 	{
 		if (isset($values['value'])) {
 			$this->name = $values['value'];
