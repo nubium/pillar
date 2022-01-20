@@ -50,6 +50,16 @@ jobs:
     strategy:
       matrix:
         php-version: [7.4, 8.1]
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: testdb
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_ROOT_PASSWORD: qqq
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies

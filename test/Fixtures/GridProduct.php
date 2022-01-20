@@ -16,10 +16,10 @@ use SpareParts\Pillar\Mapper\Annotation as Pillar;
 class GridProduct extends Entity implements IEntity
 {
 	/**
-	 * @var string
+	 * @var int|null
 	 * @Pillar\Column(table="p", primary=true)
 	 */
-	protected string $id;
+	protected ?int $id = null;
 
 	/**
 	 * @var string
@@ -28,11 +28,11 @@ class GridProduct extends Entity implements IEntity
 	protected string $name;
 
 	/**
-	 * @var int
+	 * @var int|null
 	 * @Pillar\Column(name="image_id", table="p")
 	 * @Pillar\Column(name="id", table="img", primary=true)
 	 */
-	protected int $imageId;
+	protected ?int $imageId = null;
 
 	/**
 	 * @var string
@@ -47,13 +47,13 @@ class GridProduct extends Entity implements IEntity
 	protected float $price;
 
 
-	public function getId(): string
+	public function getId(): ?int
 	{
 		return $this->id;
 	}
 
 
-	public function setId(string $id): void
+	public function setId(int $id): void
 	{
 		$this->id = $id;
 	}
@@ -70,7 +70,7 @@ class GridProduct extends Entity implements IEntity
 	}
 
 
-	public function getImageId(): int
+	public function getImageId(): ?int
 	{
 		return $this->imageId;
 	}
