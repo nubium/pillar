@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace SpareParts\Pillar\Assistant\Dibi;
 
+use Dibi\Result;
 use SpareParts\Pillar\Entity\IEntity;
 use SpareParts\Pillar\Mapper\Dibi\ColumnInfo;
 use SpareParts\Pillar\Mapper\Dibi\IEntityMapping;
@@ -10,25 +11,14 @@ use SpareParts\Pillar\Mapper\IMapper;
 
 class DibiEntityAssistant
 {
-	/**
-	 * @var IMapper
-	 */
-	protected $mapper;
+	protected IMapper $mapper;
+	protected IConnectionProvider $connectionProvider;
+	protected IEntityFactory $entityFactory;
 
 	/**
-	 * @var IConnectionProvider
+	 * @var array<string, string[]>
 	 */
-	protected $connectionProvider;
-
-	/**
-	 * @var IEntityFactory
-	 */
-	protected $entityFactory;
-
-	/**
-	 * @var array
-	 */
-	private $entityPropertiesCache = [];
+	private array $entityPropertiesCache = [];
 
 
 	public function __construct(IMapper $mapper, IEntityFactory $entityFactory, IConnectionProvider $connectionProvider)
@@ -80,7 +70,7 @@ class DibiEntityAssistant
 	 * Update entity database representation to current entity values.
 	 *
 	 * @param IEntity $entity
-	 * @param array|null $tables
+	 * @param array<mixed>|null $tables
 	 *
 	 * @return int Number of affected rows. Can be higher than 1, if multiple tables were changed!
 	 *
@@ -115,7 +105,7 @@ class DibiEntityAssistant
 			$fluent = $this->addPKToFluent($entity, $tableInfo->getIdentifier(), $columnInfos, $fluent);
 			$affectedRows += $fluent->execute(\dibi::AFFECTED_ROWS);
 		}
-		return $affectedRows;
+		return (int) $affectedRows;
 	}
 
 	/**
@@ -145,7 +135,9 @@ class DibiEntityAssistant
 			->insert($tableInfo->getName(), $columnValuesToStore);
 
 		try {
-			return $fluent->execute(\dibi::IDENTIFIER);
+			/** @var int $result */
+			$result = $fluent->execute(\dibi::IDENTIFIER);
+			return $result;
 		} catch (\Dibi\Exception $exception) {
 			// let's assume this is because the PK wasn't AUTO_INCREMENT...
 			// *waiting for pull request with better way to do this :)*
@@ -161,13 +153,13 @@ class DibiEntityAssistant
 	 * This is caused by how mysql treats ON DUPLICATE KEY INSERT clause commands.
 	 *
 	 * @param IEntity $entity
-	 * @param $tableName
+	 * @param string $tableName
 	 *
 	 * @return int|string|null
 	 * @throws \Dibi\Exception
 	 * @internal param \string[] $tables
 	 */
-	public function insertOrUpdate(IEntity $entity, $tableName)
+	public function insertOrUpdate(IEntity $entity, string $tableName)
 	{
 		$mapping = $this->mapper->getEntityMapping($entity);
 		if ($mapping->isVirtualEntity()) {
@@ -205,7 +197,7 @@ class DibiEntityAssistant
 	 * @throws UnableToSaveException
 	 * @throws \Dibi\Exception
 	 */
-	public function delete(IEntity $entity, string $tableName): int
+	public function delete(IEntity $entity, string $tableName): ?int
 	{
 		$mapping = $this->mapper->getEntityMapping($entity);
 
@@ -224,7 +216,9 @@ class DibiEntityAssistant
 		$columnInfos = $this->getColumnInfosForTable($mapping, $tableInfo);
 		$fluent = $this->addPKToFluent($entity, $tableInfo->getName(), $columnInfos, $fluent);
 
-		return $fluent->execute(\dibi::AFFECTED_ROWS);
+		/** @var int $result */
+		$result = $fluent->execute(\dibi::AFFECTED_ROWS);
+		return $result;
 	}
 
 	/**
@@ -349,7 +343,7 @@ class DibiEntityAssistant
 
 	/**
 	 * @param IEntity $entity
-	 * @param array|null $tables
+	 * @param array<mixed>|null $tables
 	 * @return TableInfo[]
 	 * @throws EntityMappingException
 	 */

@@ -9,7 +9,7 @@ use Doctrine\Common\Annotations\Annotation\Required;
  */
 class Table implements IPillarAnnotation
 {
-    const DEFAULT_TAG = 'default';
+	const DEFAULT_TAG = 'default';
 
 	/**
 	 * @Required()
@@ -20,10 +20,10 @@ class Table implements IPillarAnnotation
 
 	protected ?string $code = null;
 
-    /** @var null|string[] */
+	/** @var null|string[] */
 	protected ?array $tags = null;
 
-	public function __construct($values)
+	public function __construct(array $values)
 	{
 		if (isset($values['value'])) {
 			$this->name = $values['value'];
@@ -58,11 +58,9 @@ class Table implements IPillarAnnotation
 		return $this->code;
 	}
 
-    /**
-     * @return string[]|null
-     */
-    public function getTags(): ?array
-    {
-        return $this->tags;
-    }
+	/** @return string[]|null */
+	public function getTags(): ?array
+	{
+		return $this->tags;
+	}
 }

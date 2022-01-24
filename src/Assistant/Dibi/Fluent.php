@@ -13,15 +13,8 @@ use SpareParts\Pillar\Mapper\Dibi\TableInfo;
  */
 class Fluent extends \Dibi\Fluent
 {
-	/**
-	 * @var IEntityMapping
-	 */
-	protected $entityMapping;
-
-	/**
-	 * @var IEntityFactory
-	 */
-	protected $entityFactory;
+	protected IEntityMapping $entityMapping;
+	protected ?IEntityFactory $entityFactory;
 
 	public function __construct(\Dibi\Connection $connection, IEntityMapping $entityMapping, IEntityFactory $entityFactory = null)
 	{
@@ -82,6 +75,10 @@ class Fluent extends \Dibi\Fluent
 		$tables = $this->entityMapping->getTables($tag);
 
 		$primaryTable = array_shift($tables);
+		// shouldn't happen, only for phpstan
+		if ($primaryTable == null) {
+			return $this;
+		}
 
 		$propertyTables = [];
 		if ($propertyList !== null) {
@@ -93,17 +90,23 @@ class Fluent extends \Dibi\Fluent
 			$additionalTables = array_filter($tables, fn (TableInfo $tableInfo) => in_array($tableInfo->getIdentifier(), $additionalTableList));
 		}
 
-		$innerJoinTables = array_filter($tables, fn (TableInfo $tableInfo) => (strtolower(substr($tableInfo->getSqlJoinCode(), 0, 5)) === 'inner'));
+		$innerJoinTables = array_filter(
+			$tables,
+			fn (TableInfo $tableInfo) => (
+				strtolower(substr($tableInfo->getSqlJoinCode() ?? '', 0, 5)) === 'inner'
+			)
+		);
 
 		if ($propertyList || $additionalTableList) {
 			// in case I wish to restrict the result
 			$tables = array_unique(array_merge($innerJoinTables, $propertyTables, $additionalTables), SORT_REGULAR);
 		}
 
+
 		if ($primaryTable->getSqlJoinCode() !== null) {
 			$fromCode = $primaryTable->getSqlJoinCode();
 			$fromCodeParts = preg_split('/\\s+/', $fromCode, 2);
-			if (count($fromCodeParts) >= 1 && strtolower($fromCodeParts[0]) == 'from') {
+			if (is_array($fromCodeParts) && count($fromCodeParts) >= 1 && strtolower($fromCodeParts[0]) == 'from') {
 				$fromCode = $fromCodeParts[1];
 			}
 			$this->__call('FROM', [$fromCode]);

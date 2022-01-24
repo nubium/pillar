@@ -7,9 +7,8 @@ use SpareParts\Pillar\Mapper\IMapper;
 class EntityFactory implements IEntityFactory
 {
 	/**
-	 * @param string $entityClassName
+	 * @param class-string<IEntity> $entityClassName
 	 * @param mixed[] $data
-	 * @return IEntity
 	 */
 	public function createEntity(string $entityClassName, array $data): IEntity
 	{
@@ -18,6 +17,9 @@ class EntityFactory implements IEntityFactory
 			return ($column instanceof \DateTime) ? \DateTimeImmutable::createFromMutable($column) : $column;
 		}, $data);
 
-		return new $entityClassName($data);
+		$created = new $entityClassName($data);
+		assert($created instanceof IEntity);
+
+		return $created;
 	}
 }

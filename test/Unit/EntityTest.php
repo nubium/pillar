@@ -8,7 +8,7 @@ class EntityTest extends TestCase
 {
 
 	/** @test */
-	public function canGetChangedProperties()
+	public function canGetChangedProperties(): void
 	{
 		$entity = new GridProduct();
 		$values = $entity->getChangedProperties(['id', 'name']);

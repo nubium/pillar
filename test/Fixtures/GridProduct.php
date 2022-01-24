@@ -16,10 +16,10 @@ use SpareParts\Pillar\Mapper\Annotation as Pillar;
 class GridProduct extends Entity implements IEntity
 {
 	/**
-	 * @var string
+	 * @var int|null
 	 * @Pillar\Column(table="p", primary=true)
 	 */
-	protected string $id;
+	protected ?int $id = null;
 
 	/**
 	 * @var string
@@ -28,11 +28,11 @@ class GridProduct extends Entity implements IEntity
 	protected string $name;
 
 	/**
-	 * @var int
+	 * @var int|null
 	 * @Pillar\Column(name="image_id", table="p")
 	 * @Pillar\Column(name="id", table="img", primary=true)
 	 */
-	protected int $imageId;
+	protected ?int $imageId = null;
 
 	/**
 	 * @var string
@@ -47,83 +47,59 @@ class GridProduct extends Entity implements IEntity
 	protected float $price;
 
 
-
-	/**
-	 * @return string
-	 */
-	public function getId()
+	public function getId(): ?int
 	{
 		return $this->id;
 	}
 
-	/**
-	 * @param string $id
-	 */
-	public function setId($id)
+
+	public function setId(int $id): void
 	{
 		$this->id = $id;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}
 
-	/**
-	 * @param string $name
-	 */
-	public function setName($name)
+
+	public function setName(string $name): void
 	{
 		$this->name = $name;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getImageId()
+
+	public function getImageId(): ?int
 	{
 		return $this->imageId;
 	}
 
-	/**
-	 * @param int $imageId
-	 */
-	public function setImageId($imageId)
+
+	public function setImageId(int $imageId): void
 	{
 		$this->imageId = $imageId;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getImage()
+
+	public function getImage(): string
 	{
 		return $this->image;
 	}
 
-	/**
-	 * @param string $image
-	 */
-	public function setImage($image)
+
+	public function setImage(string $image): void
 	{
 		$this->image = $image;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getPrice()
+
+	public function getPrice(): float
 	{
 		return $this->price;
 	}
 
-	/**
-	 * @param float $price
-	 */
-	public function setPrice($price)
+	public function setPrice(float $price): void
 	{
 		$this->price = $price;
 	}

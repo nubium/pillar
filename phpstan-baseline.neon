@@ -1,0 +1,52 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method Dibi\\\\Fluent\\:\\:onDuplicateKeyUpdate\\(\\)\\.$#"
+			count: 1
+			path: src/Assistant/Dibi/DibiEntityAssistant.php
+
+		-
+			message: "#^Method SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\DibiEntityAssistant\\:\\:addPKToFluent\\(\\) has parameter \\$fluent with no value type specified in iterable type Dibi\\\\Fluent\\.$#"
+			count: 1
+			path: src/Assistant/Dibi/DibiEntityAssistant.php
+
+		-
+			message: "#^Method SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\DibiEntityAssistant\\:\\:addPKToFluent\\(\\) return type has no value type specified in iterable type Dibi\\\\Fluent\\.$#"
+			count: 1
+			path: src/Assistant/Dibi/DibiEntityAssistant.php
+
+		-
+			message: "#^Method SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\DibiEntityAssistant\\:\\:fluent\\(\\) return type has no value type specified in iterable type SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\Fluent\\.$#"
+			count: 1
+			path: src/Assistant/Dibi/DibiEntityAssistant.php
+
+		-
+			message: "#^Method SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\DibiEntityAssistant\\:\\:fluentForAggregateCalculations\\(\\) return type has no value type specified in iterable type SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\Fluent\\.$#"
+			count: 1
+			path: src/Assistant/Dibi/DibiEntityAssistant.php
+
+		-
+			message: "#^Method SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\Fluent\\:\\:applySorting\\(\\) return type has no value type specified in iterable type \\$this\\(SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\Fluent\\)\\.$#"
+			count: 1
+			path: src/Assistant/Dibi/Fluent.php
+
+		-
+			message: "#^Method SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\Fluent\\:\\:fromEntityDataSources\\(\\) return type has no value type specified in iterable type \\$this\\(SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\Fluent\\)\\.$#"
+			count: 1
+			path: src/Assistant/Dibi/Fluent.php
+
+		-
+			message: "#^Method SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\Fluent\\:\\:selectEntityProperties\\(\\) return type has no value type specified in iterable type \\$this\\(SpareParts\\\\Pillar\\\\Assistant\\\\Dibi\\\\Fluent\\)\\.$#"
+			count: 1
+			path: src/Assistant/Dibi/Fluent.php
+
+		-
+			message: "#^Method SpareParts\\\\Pillar\\\\Mapper\\\\Annotation\\\\Column\\:\\:__construct\\(\\) has parameter \\$values with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Mapper/Annotation/Column.php
+
+		-
+			message: "#^Method SpareParts\\\\Pillar\\\\Mapper\\\\Annotation\\\\Table\\:\\:__construct\\(\\) has parameter \\$values with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Mapper/Annotation/Table.php
+

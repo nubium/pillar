@@ -21,7 +21,7 @@ class ColumnInfo
 	 */
 	private $isDeprecated;
 
-	public function __construct(string $columnName, string $propertyName, string $tableIdentifier, bool $isPrimaryKey, bool $isDeprecated, $enabledForSelect, string $customSelectSql = null)
+	public function __construct(string $columnName, string $propertyName, string $tableIdentifier, bool $isPrimaryKey, bool $isDeprecated, bool $enabledForSelect, string $customSelectSql = null)
 	{
 		$this->columnName = $columnName;
 		$this->propertyName = $propertyName;
@@ -29,8 +29,8 @@ class ColumnInfo
 		$this->enabledForSelect = $enabledForSelect;
 		$this->customSelectSql = $customSelectSql;
 		$this->isDeprecated = $isDeprecated;
-        $this->tableIdentifier = $tableIdentifier;
-    }
+		$this->tableIdentifier = $tableIdentifier;
+	}
 
 	public function getColumnName(): string
 	{

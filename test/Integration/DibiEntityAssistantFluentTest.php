@@ -1,15 +1,17 @@
 <?php declare(strict_types=1);
 namespace SpareParts\Pillar\Test\Integration;
 
+use Dibi\Connection;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use PHPUnit\Framework\TestCase;
 use SpareParts\Pillar\Adapter\Dibi\DibiConnectionProvider;
 use SpareParts\Pillar\Assistant\Dibi\DibiEntityAssistant;
 use SpareParts\Pillar\Entity\EntityFactory;
 use SpareParts\Pillar\Mapper\Dibi\AnnotationMapper;
 use SpareParts\Pillar\Test\Fixtures\GridProduct;
 
-class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
+class DibiEntityAssistantFluentTest extends TestCase
 {
 	/** @var DibiEntityAssistant */
 	protected $entityAssistant;
@@ -25,8 +27,8 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 
 		$mapper = new AnnotationMapper(new AnnotationReader());
 		$entityFactory = new EntityFactory();
-		$this->connection = new \Dibi\Connection([
-			'host' => 'mariadb',
+		$this->connection = new Connection([
+			'host' => '127.0.0.1',
 			'username' => 'root',
 			'password' => 'qqq',
 			'database' => 'testdb',
@@ -45,7 +47,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * @test
 	 */
-	public function fluentCanLoadEntityById()
+	public function fluentCanLoadEntityById(): void
 	{
 		/** @var GridProduct $product */
 		$product = $this->entityAssistant
@@ -54,7 +56,6 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 			->fromEntityDataSources()
 			->where('`p`.`id` = %i', 25)
 			->fetch();
-        ;
 
 //		$product->fetch();
 
@@ -68,7 +69,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * @test
 	 */
-	public function fluentCanUseAggregateSelectAndOmitJoinTable()
+	public function fluentCanUseAggregateSelectAndOmitJoinTable(): void
 	{
 		$fluent = $this->entityAssistant
 			->fluentForAggregateCalculations(GridProduct::class)
@@ -86,7 +87,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * @test
 	 */
-	public function fluentCanUseAggregateSelectAndNotOmitJoinTable()
+	public function fluentCanUseAggregateSelectAndNotOmitJoinTable(): void
 	{
 		$fluent = $this->entityAssistant
 			->fluentForAggregateCalculations(GridProduct::class)
@@ -104,7 +105,7 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * @test
 	 */
-	public function fluentCanUseAggregateSelect()
+	public function fluentCanUseAggregateSelect(): void
 	{
 		$fluent = $this->entityAssistant
 			->fluentForAggregateCalculations(GridProduct::class)
@@ -118,57 +119,57 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('SELECT `path` FROM `products` AS `p`  LEFT JOIN `images` `img` ON `img`.`id` = `p`.`image_id`', $fluent->__toString());
 	}
 
-    /**
-     * @test
-     */
-    public function fluentCanUseTagToChangePrimarySelectTable()
-    {
-        $fluent = $this->entityAssistant
-            ->fluent(GridProduct::class)
-            ->selectEntityProperties()
-            ->fromEntityDataSources(null, null, 'idx')
-            ->where('`p`.`id` = %i', 25);
+	/**
+	 * @test
+	 */
+	public function fluentCanUseTagToChangePrimarySelectTable(): void
+	{
+		$fluent = $this->entityAssistant
+			->fluent(GridProduct::class)
+			->selectEntityProperties()
+			->fromEntityDataSources(null, null, 'idx')
+			->where('`p`.`id` = %i', 25);
 
-        /** @var GridProduct $product */
-        $product = $fluent->fetch();
-        $this->assertEquals(25, $product->getId());
-        $this->assertEquals(1, $product->getImageId());
-        $this->assertEquals('amazing bedsheet', $product->getName());
-        $this->assertEquals(12.5, $product->getPrice());
-        $this->assertEquals('/path/to/image', $product->getImage());
+		/** @var GridProduct $product */
+		$product = $fluent->fetch();
+		$this->assertEquals(25, $product->getId());
+		$this->assertEquals(1, $product->getImageId());
+		$this->assertEquals('amazing bedsheet', $product->getName());
+		$this->assertEquals(12.5, $product->getPrice());
+		$this->assertEquals('/path/to/image', $product->getImage());
 
-        $this->assertEquals('SELECT `p`.`id` AS `id` , `p`.`name` AS `name` , `p`.`image_id` AS `imageId` , `p`.`price` AS `price` , `img`.`path` AS `image` FROM `products` `p` USE INDEX (`idx_try_me_out`)  LEFT JOIN `images` `img` ON `img`.`id` = `p`.`image_id` WHERE `p`.`id` = 25', $fluent->__toString());
-    }
+		$this->assertEquals('SELECT `p`.`id` AS `id` , `p`.`name` AS `name` , `p`.`image_id` AS `imageId` , `p`.`price` AS `price` , `img`.`path` AS `image` FROM `products` `p` USE INDEX (`idx_try_me_out`)  LEFT JOIN `images` `img` ON `img`.`id` = `p`.`image_id` WHERE `p`.`id` = 25', $fluent->__toString());
+	}
 
 
-    /**
-     * @test
-     */
-    public function fluentCanUseTagToChangeJoinSelectTable()
-    {
-        $fluent = $this->entityAssistant
-            ->fluent(GridProduct::class)
-            ->selectEntityProperties()
-            ->fromEntityDataSources(null, null, 'slightly_diff_join')
-            ->where('`p`.`id` = %i', 25);
+	/**
+	 * @test
+	 */
+	public function fluentCanUseTagToChangeJoinSelectTable(): void
+	{
+		$fluent = $this->entityAssistant
+			->fluent(GridProduct::class)
+			->selectEntityProperties()
+			->fromEntityDataSources(null, null, 'slightly_diff_join')
+			->where('`p`.`id` = %i', 25);
 
-        /** @var GridProduct $product */
-        $product = $fluent->fetch();
-        $this->assertEquals(25, $product->getId());
-        $this->assertEquals(1, $product->getImageId());
-        $this->assertEquals('amazing bedsheet', $product->getName());
-        $this->assertEquals(12.5, $product->getPrice());
-        $this->assertEquals('/path/to/image', $product->getImage());
+		/** @var GridProduct $product */
+		$product = $fluent->fetch();
+		$this->assertEquals(25, $product->getId());
+		$this->assertEquals(1, $product->getImageId());
+		$this->assertEquals('amazing bedsheet', $product->getName());
+		$this->assertEquals(12.5, $product->getPrice());
+		$this->assertEquals('/path/to/image', $product->getImage());
 
-        $this->assertEquals('SELECT `p`.`id` AS `id` , `p`.`name` AS `name` , `p`.`image_id` AS `imageId` , `p`.`price` AS `price` , `img`.`path` AS `image` FROM `products` AS `p`  LEFT JOIN `images` `img` ON `p`.`image_id` = `img`.`id` WHERE `p`.`id` = 25', $fluent->__toString());
-    }
+		$this->assertEquals('SELECT `p`.`id` AS `id` , `p`.`name` AS `name` , `p`.`image_id` AS `imageId` , `p`.`price` AS `price` , `img`.`path` AS `image` FROM `products` AS `p`  LEFT JOIN `images` `img` ON `p`.`image_id` = `img`.`id` WHERE `p`.`id` = 25', $fluent->__toString());
+	}
 
 
 	/**
 	 * @throws \Dibi\Exception
 	 * @test
 	 */
-	public function insertCanCreateNewRow()
+	public function insertCanCreateNewRow(): void
 	{
 		$product = new GridProduct();
 		$product->setImage('path/to/image/i/guess');
@@ -176,22 +177,26 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 		$product->setPrice(11.1);
 
 		$this->assertIsInt($imgId = $this->entityAssistant->insert($product, 'img'));
+
 		$product->setImageId($imgId);
 		$this->assertIsInt($id = $this->entityAssistant->insert($product, 'p'));
 
 		$data = $this->connection->select('name, price, image_id')->from('products')->where('`id` = %i', $id)->fetch();
+
+		$this->assertNotNull($data);
 		$this->assertEquals('black mirror', $data['name']);
 		$this->assertEquals(11.1, $data['price']);
 		$this->assertEquals($imgId, $data['image_id']);
 
 		$data = $this->connection->select('path')->from('images')->where('`id` = %i', $imgId)->fetch();
+		$this->assertNotNull($data);
 		$this->assertEquals('path/to/image/i/guess', $data['path']);
 	}
 
 	/**
 	 * @test
 	 */
-	public function updateCanChangeRowsInMultipleTables()
+	public function updateCanChangeRowsInMultipleTables(): void
 	{
 		// this is a sketchy way to prepare fixture entity - it depends on knowing of inner workings of pillar. Should probably use mock instead, but am too lazy to do so.
 		$product = new GridProduct(['id' => 25, 'imageId' => 1]);
@@ -221,38 +226,45 @@ class DibiEntityAssistantFluentTest extends \PHPUnit\Framework\TestCase
 
 	protected function createConnection(): \PDO
 	{
-		return new \PDO('mysql:host=mariadb;dbname=testdb', 'root', 'qqq', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
-	}
-
-	protected function getDataSet()
-	{
-		return new ArrayDataSet([
-			'images' => [
-				[
-					'id' => 1,
-					'path' => '/path/to/image',
-				],
-			],
-			'products' => [
-				[
-					'id' => 25,
-					'image_id' => 1,
-					'price' => 12.5,
-					'name' => 'amazing bedsheet',
-				]
-			],
-		]);
+		return new \PDO('mysql:host=127.0.0.1;port=3306;dbname=testdb', 'root', 'qqq', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
 	}
 
 	private function prepareDatabase(): void
 	{
 		$pdo = $this->createConnection();
+		$this->createTables($pdo);
 
-		$pdo->query('DELETE FROM products')->execute();
-		$pdo->query('DELETE FROM images')->execute();
+		$productsDelete = $pdo->query('DELETE FROM products');
+		$imagesDelete = $pdo->query('DELETE FROM images');
+
+		if ($productsDelete == false || $imagesDelete == false) {
+			throw new \LogicException("Products or images delete query failed");
+		}
+
+		$productsDelete->execute();
+		$imagesDelete->execute();
 
 		$pdo->prepare('INSERT INTO images(id, path) VALUES(1, ?)')->execute(['/path/to/image']);
 		$pdo->prepare('INSERT INTO products(id, image_id, price, name) VALUES(25, 1, 12.5, ?)')
 			->execute(['amazing bedsheet']);
+	}
+
+	private function createTables(\PDO $pdo): void
+	{
+		$imagesCreateSql = "CREATE TABLE IF NOT EXISTS images(
+			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			path VARCHAR(200)
+		)";
+		$productsCreateSql = "CREATE TABLE IF NOT EXISTS products(
+			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			image_id INT NOT NULL,
+			price DECIMAL(10, 2),
+			name VARCHAR(255),
+			FOREIGN KEY (image_id) REFERENCES images(id),
+			INDEX idx_try_me_out (name) 
+		)";
+
+		$pdo->exec($imagesCreateSql);
+		$pdo->exec($productsCreateSql);
 	}
 }
